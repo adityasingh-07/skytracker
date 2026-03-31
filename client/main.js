@@ -1,5 +1,5 @@
 // SkyTracker — Main App Router
-const API = 'http://localhost:3000';
+const API = 'https://skytracker-api.onrender.com';
 
 // ─── State ───
 let currentUser = null;
@@ -154,7 +154,7 @@ function renderRoleSelect() {
     </div>`;
 }
 
-window.selectRole = async function(role) {
+window.selectRole = async function (role) {
   try {
     const data = await api('/auth/select-role', {
       method: 'POST',
@@ -163,7 +163,7 @@ window.selectRole = async function(role) {
     currentUser = data.user;
     showToast(`Welcome as ${role}!`, 'success');
     renderDashboard();
-  } catch {}
+  } catch { }
 };
 
 // ═══════════════════════════════
@@ -189,7 +189,7 @@ function renderNavbar() {
     </nav>`;
 }
 
-window.logout = async function() {
+window.logout = async function () {
   await api('/auth/logout', { method: 'POST' });
   currentUser = null;
   renderLogin();
@@ -205,7 +205,7 @@ function renderDashboard() {
 }
 
 // Global navigation — needed because inline onclick can't access module scope
-window.navigate = function(view) {
+window.navigate = function (view) {
   currentView = view;
   renderDashboard();
 };
@@ -219,13 +219,13 @@ async function renderPassengerDashboard() {
     <div class="dashboard">
       <aside class="sidebar">
         <div class="sidebar-section">Navigation</div>
-        <button class="sidebar-link ${currentView==='overview'?'active':''}" onclick="navigate('overview')">
+        <button class="sidebar-link ${currentView === 'overview' ? 'active' : ''}" onclick="navigate('overview')">
           <span class="material-icons-round">dashboard</span> Overview
         </button>
-        <button class="sidebar-link ${currentView==='search'?'active':''}" onclick="navigate('search')">
+        <button class="sidebar-link ${currentView === 'search' ? 'active' : ''}" onclick="navigate('search')">
           <span class="material-icons-round">search</span> Search Flights
         </button>
-        <button class="sidebar-link ${currentView==='bookings'?'active':''}" onclick="navigate('bookings')">
+        <button class="sidebar-link ${currentView === 'bookings' ? 'active' : ''}" onclick="navigate('bookings')">
           <span class="material-icons-round">confirmation_number</span> My Bookings
         </button>
       </aside>
@@ -266,7 +266,7 @@ async function renderPassengerDashboard() {
       ${flights.length === 0 ? '<div class="empty-state"><span class="material-icons-round">flight</span><h3>No flights found</h3><p>Try different search criteria</p></div>' : ''}
     `;
 
-    window.filterFlights = async function() {
+    window.filterFlights = async function () {
       const from = document.getElementById('filter-from').value;
       const to = document.getElementById('filter-to').value;
       const date = document.getElementById('filter-date').value;
@@ -344,7 +344,7 @@ function renderFlightCard(f) {
 }
 
 // ─── Booking Modal ───
-window.openBookingModal = function(flightId, flightNum, from, to, price) {
+window.openBookingModal = function (flightId, flightNum, from, to, price) {
   if (currentUser.role !== 'passenger') { showToast('Only passengers can book', 'error'); return; }
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
@@ -379,7 +379,7 @@ window.openBookingModal = function(flightId, flightNum, from, to, price) {
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
 };
 
-window.confirmBooking = async function(flightId) {
+window.confirmBooking = async function (flightId) {
   const seat = document.getElementById('book-seat').value;
   const ticket_type = document.getElementById('book-class').value;
   await api('/api/bookings', { method: 'POST', body: JSON.stringify({ flight_id: flightId, seat_number: seat, ticket_type }) });
@@ -389,7 +389,7 @@ window.confirmBooking = async function(flightId) {
   renderPassengerDashboard();
 };
 
-window.cancelBooking = async function(id) {
+window.cancelBooking = async function (id) {
   if (!confirm('Cancel this booking?')) return;
   await api(`/api/bookings/${id}`, { method: 'DELETE' });
   showToast('Booking cancelled', 'success');
@@ -405,22 +405,22 @@ async function renderAdminDashboard() {
     <div class="dashboard">
       <aside class="sidebar">
         <div class="sidebar-section">Admin Panel</div>
-        <button class="sidebar-link ${currentView==='overview'?'active':''}" onclick="navigate('overview')">
+        <button class="sidebar-link ${currentView === 'overview' ? 'active' : ''}" onclick="navigate('overview')">
           <span class="material-icons-round">dashboard</span> Overview
         </button>
-        <button class="sidebar-link ${currentView==='flights'?'active':''}" onclick="navigate('flights')">
+        <button class="sidebar-link ${currentView === 'flights' ? 'active' : ''}" onclick="navigate('flights')">
           <span class="material-icons-round">flight</span> Flights
         </button>
-        <button class="sidebar-link ${currentView==='airlines'?'active':''}" onclick="navigate('airlines')">
+        <button class="sidebar-link ${currentView === 'airlines' ? 'active' : ''}" onclick="navigate('airlines')">
           <span class="material-icons-round">airlines</span> Airlines
         </button>
-        <button class="sidebar-link ${currentView==='airports'?'active':''}" onclick="navigate('airports')">
+        <button class="sidebar-link ${currentView === 'airports' ? 'active' : ''}" onclick="navigate('airports')">
           <span class="material-icons-round">location_on</span> Airports
         </button>
-        <button class="sidebar-link ${currentView==='aircraft'?'active':''}" onclick="navigate('aircraft')">
+        <button class="sidebar-link ${currentView === 'aircraft' ? 'active' : ''}" onclick="navigate('aircraft')">
           <span class="material-icons-round">airplanemode_active</span> Aircraft
         </button>
-        <button class="sidebar-link ${currentView==='admin-bookings'?'active':''}" onclick="navigate('admin-bookings')">
+        <button class="sidebar-link ${currentView === 'admin-bookings' ? 'active' : ''}" onclick="navigate('admin-bookings')">
           <span class="material-icons-round">receipt_long</span> Bookings
         </button>
       </aside>
@@ -464,8 +464,8 @@ async function renderAdminDashboard() {
           <td>${b.booking_id}</td>
           <td>${b.Passenger?.first_name || ''} ${b.Passenger?.last_name || ''}</td>
           <td><strong>${b.Flight?.flight_number || ''}</strong></td>
-          <td>${b.Flight?.DepartureAirport?.iata_code||'?'} → ${b.Flight?.ArrivalAirport?.iata_code||'?'}</td>
-          <td>${b.seat_number||'—'}</td>
+          <td>${b.Flight?.DepartureAirport?.iata_code || '?'} → ${b.Flight?.ArrivalAirport?.iata_code || '?'}</td>
+          <td>${b.seat_number || '—'}</td>
           <td style="text-transform:capitalize">${b.ticket_type}</td>
           <td><span class="payment-badge ${b.payment_status}">${b.payment_status}</span></td>
           <td>${formatDate(b.booking_date)}</td>
@@ -496,28 +496,28 @@ async function renderAdminFlights(main) {
       <th>Flight</th><th>Airline</th><th>Route</th><th>Departure</th><th>Arrival</th><th>Price</th><th>Status</th><th>Actions</th>
     </tr></thead><tbody>
       ${flights.map(f => {
-        const st = getLatestStatus(f.statuses);
-        return `<tr>
+    const st = getLatestStatus(f.statuses);
+    return `<tr>
           <td><strong>${f.flight_number}</strong></td>
-          <td>${f.Airline?.name||''}</td>
-          <td>${f.DepartureAirport?.iata_code||'?'} → ${f.ArrivalAirport?.iata_code||'?'}</td>
+          <td>${f.Airline?.name || ''}</td>
+          <td>${f.DepartureAirport?.iata_code || '?'} → ${f.ArrivalAirport?.iata_code || '?'}</td>
           <td>${formatDate(f.departure_time)} ${formatTime(f.departure_time)}</td>
           <td>${formatTime(f.arrival_time)}</td>
           <td>${formatPrice(f.base_price)}</td>
-          <td><span class="status-badge ${st}">${st.replace('_',' ')}</span></td>
+          <td><span class="status-badge ${st}">${st.replace('_', ' ')}</span></td>
           <td>
             <button class="btn btn-secondary btn-sm" onclick="openStatusModal(${f.flight_id},'${f.flight_number}')">Status</button>
             <button class="btn btn-danger btn-sm" onclick="deleteFlight(${f.flight_id})">Del</button>
           </td>
         </tr>`;
-      }).join('')}
+  }).join('')}
     </tbody></table></div>`;
 
   // Store data for modals
   window._adminData = { airlines, airports, aircraft };
 }
 
-window.openFlightModal = function() {
+window.openFlightModal = function () {
   const { airlines, airports, aircraft } = window._adminData;
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
@@ -525,10 +525,10 @@ window.openFlightModal = function() {
   overlay.innerHTML = `<div class="modal">
     <div class="modal-header"><h2>Add New Flight</h2><button class="modal-close" onclick="document.getElementById('flight-modal').remove()">×</button></div>
     <div class="form-group"><label>Flight Number</label><input class="form-control" id="f-num" placeholder="e.g. AI-505"></div>
-    <div class="form-group"><label>Airline</label><select class="form-control" id="f-airline">${airlines.map(a=>`<option value="${a.airline_id}">${a.name}</option>`).join('')}</select></div>
-    <div class="form-group"><label>Aircraft</label><select class="form-control" id="f-aircraft">${aircraft.map(a=>`<option value="${a.aircraft_id}">${a.model}</option>`).join('')}</select></div>
-    <div class="form-group"><label>From</label><select class="form-control" id="f-from">${airports.map(a=>`<option value="${a.airport_id}">${a.iata_code} — ${a.city}</option>`).join('')}</select></div>
-    <div class="form-group"><label>To</label><select class="form-control" id="f-to">${airports.map(a=>`<option value="${a.airport_id}">${a.iata_code} — ${a.city}</option>`).join('')}</select></div>
+    <div class="form-group"><label>Airline</label><select class="form-control" id="f-airline">${airlines.map(a => `<option value="${a.airline_id}">${a.name}</option>`).join('')}</select></div>
+    <div class="form-group"><label>Aircraft</label><select class="form-control" id="f-aircraft">${aircraft.map(a => `<option value="${a.aircraft_id}">${a.model}</option>`).join('')}</select></div>
+    <div class="form-group"><label>From</label><select class="form-control" id="f-from">${airports.map(a => `<option value="${a.airport_id}">${a.iata_code} — ${a.city}</option>`).join('')}</select></div>
+    <div class="form-group"><label>To</label><select class="form-control" id="f-to">${airports.map(a => `<option value="${a.airport_id}">${a.iata_code} — ${a.city}</option>`).join('')}</select></div>
     <div class="form-group"><label>Departure</label><input type="datetime-local" class="form-control" id="f-dep"></div>
     <div class="form-group"><label>Arrival</label><input type="datetime-local" class="form-control" id="f-arr"></div>
     <div class="form-group"><label>Base Price (₹)</label><input type="number" class="form-control" id="f-price" placeholder="5000"></div>
@@ -540,30 +540,32 @@ window.openFlightModal = function() {
   document.body.appendChild(overlay);
 };
 
-window.createFlight = async function() {
-  await api('/api/flights', { method: 'POST', body: JSON.stringify({
-    flight_number: document.getElementById('f-num').value,
-    airline_id: document.getElementById('f-airline').value,
-    aircraft_id: document.getElementById('f-aircraft').value,
-    departure_airport_id: document.getElementById('f-from').value,
-    arrival_airport_id: document.getElementById('f-to').value,
-    departure_time: document.getElementById('f-dep').value,
-    arrival_time: document.getElementById('f-arr').value,
-    base_price: document.getElementById('f-price').value,
-  })});
+window.createFlight = async function () {
+  await api('/api/flights', {
+    method: 'POST', body: JSON.stringify({
+      flight_number: document.getElementById('f-num').value,
+      airline_id: document.getElementById('f-airline').value,
+      aircraft_id: document.getElementById('f-aircraft').value,
+      departure_airport_id: document.getElementById('f-from').value,
+      arrival_airport_id: document.getElementById('f-to').value,
+      departure_time: document.getElementById('f-dep').value,
+      arrival_time: document.getElementById('f-arr').value,
+      base_price: document.getElementById('f-price').value,
+    })
+  });
   document.getElementById('flight-modal').remove();
   showToast('Flight created!', 'success');
   renderAdminDashboard();
 };
 
-window.deleteFlight = async function(id) {
+window.deleteFlight = async function (id) {
   if (!confirm('Delete this flight?')) return;
   await api(`/api/flights/${id}`, { method: 'DELETE' });
   showToast('Flight deleted', 'success');
   renderAdminDashboard();
 };
 
-window.openStatusModal = function(flightId, num) {
+window.openStatusModal = function (flightId, num) {
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
   overlay.id = 'status-modal';
@@ -582,11 +584,13 @@ window.openStatusModal = function(flightId, num) {
   document.body.appendChild(overlay);
 };
 
-window.updateFlightStatus = async function(flightId) {
-  await api(`/api/flights/${flightId}/status`, { method: 'POST', body: JSON.stringify({
-    status_type: document.getElementById('s-type').value,
-    delay_reason: document.getElementById('s-reason').value,
-  })});
+window.updateFlightStatus = async function (flightId) {
+  await api(`/api/flights/${flightId}/status`, {
+    method: 'POST', body: JSON.stringify({
+      status_type: document.getElementById('s-type').value,
+      delay_reason: document.getElementById('s-reason').value,
+    })
+  });
   document.getElementById('status-modal').remove();
   showToast('Status updated!', 'success');
   renderAdminDashboard();
@@ -599,36 +603,36 @@ async function renderAdminCRUD(main, entity, title, fields, idField) {
     <div class="page-header animate-in"><h1>${title}</h1></div>
     <div class="toolbar animate-in">
       <span>${items.length} ${title.toLowerCase()}</span>
-      <button class="btn btn-primary" onclick="openCrudModal('${entity}', ${JSON.stringify(fields).replace(/"/g,"'")}, '${idField}')">
+      <button class="btn btn-primary" onclick="openCrudModal('${entity}', ${JSON.stringify(fields).replace(/"/g, "'")}, '${idField}')">
         <span class="material-icons-round">add</span> Add
       </button>
     </div>
     <div class="data-table-container animate-in"><table class="data-table"><thead><tr>
-      ${fields.map(f => `<th>${f.replace('_',' ')}</th>`).join('')}<th>Actions</th>
+      ${fields.map(f => `<th>${f.replace('_', ' ')}</th>`).join('')}<th>Actions</th>
     </tr></thead><tbody>
       ${items.map(item => `<tr>
-        ${fields.map(f => `<td>${item[f]||''}</td>`).join('')}
+        ${fields.map(f => `<td>${item[f] || ''}</td>`).join('')}
         <td><button class="btn btn-danger btn-sm" onclick="deleteCrudItem('${entity}',${item[idField]})">Delete</button></td>
       </tr>`).join('')}
     </tbody></table></div>`;
 }
 
-window.openCrudModal = function(entity, fields, idField) {
+window.openCrudModal = function (entity, fields, idField) {
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
   overlay.id = 'crud-modal';
   overlay.innerHTML = `<div class="modal">
     <div class="modal-header"><h2>Add New</h2><button class="modal-close" onclick="document.getElementById('crud-modal').remove()">×</button></div>
-    ${fields.map(f => `<div class="form-group"><label>${f.replace('_',' ')}</label><input class="form-control" id="crud-${f}" placeholder="${f}"></div>`).join('')}
+    ${fields.map(f => `<div class="form-group"><label>${f.replace('_', ' ')}</label><input class="form-control" id="crud-${f}" placeholder="${f}"></div>`).join('')}
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="document.getElementById('crud-modal').remove()">Cancel</button>
-      <button class="btn btn-success" onclick="createCrudItem('${entity}', ${JSON.stringify(fields).replace(/"/g,"'")})">Create</button>
+      <button class="btn btn-success" onclick="createCrudItem('${entity}', ${JSON.stringify(fields).replace(/"/g, "'")})">Create</button>
     </div>
   </div>`;
   document.body.appendChild(overlay);
 };
 
-window.createCrudItem = async function(entity, fields) {
+window.createCrudItem = async function (entity, fields) {
   const body = {};
   fields.forEach(f => body[f] = document.getElementById(`crud-${f}`).value);
   await api(`/api/${entity}`, { method: 'POST', body: JSON.stringify(body) });
@@ -637,7 +641,7 @@ window.createCrudItem = async function(entity, fields) {
   renderAdminDashboard();
 };
 
-window.deleteCrudItem = async function(entity, id) {
+window.deleteCrudItem = async function (entity, id) {
   if (!confirm('Delete?')) return;
   await api(`/api/${entity}/${id}`, { method: 'DELETE' });
   showToast('Deleted', 'success');
@@ -653,13 +657,13 @@ async function renderCrewDashboard() {
     <div class="dashboard">
       <aside class="sidebar">
         <div class="sidebar-section">Crew Panel</div>
-        <button class="sidebar-link ${currentView==='overview'?'active':''}" onclick="navigate('overview')">
+        <button class="sidebar-link ${currentView === 'overview' ? 'active' : ''}" onclick="navigate('overview')">
           <span class="material-icons-round">dashboard</span> My Schedule
         </button>
-        <button class="sidebar-link ${currentView==='profile'?'active':''}" onclick="navigate('profile')">
+        <button class="sidebar-link ${currentView === 'profile' ? 'active' : ''}" onclick="navigate('profile')">
           <span class="material-icons-round">person</span> My Profile
         </button>
-        <button class="sidebar-link ${currentView==='all-flights'?'active':''}" onclick="navigate('all-flights')">
+        <button class="sidebar-link ${currentView === 'all-flights' ? 'active' : ''}" onclick="navigate('all-flights')">
           <span class="material-icons-round">flight</span> All Flights
         </button>
       </aside>
@@ -673,23 +677,23 @@ async function renderCrewDashboard() {
   if (currentView === 'overview') {
     try {
       const flights = await api('/api/crew/my-flights');
-      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       main.innerHTML = `
         <div class="page-header animate-in"><h1>📅 My Flight Schedule</h1><p>${flights.length} assigned flights</p></div>
         <div class="stagger-in">
           ${flights.length === 0 ? '<div class="empty-state"><span class="material-icons-round">event_busy</span><h3>No flights assigned</h3><p>Contact admin to get assigned to flights</p></div>' : ''}
           ${flights.map(f => {
-            const d = new Date(f.departure_time);
-            return `<div class="schedule-card">
+        const d = new Date(f.departure_time);
+        return `<div class="schedule-card">
               <div class="schedule-date"><div class="day">${d.getDate()}</div><div class="month">${months[d.getMonth()]}</div></div>
               <div class="schedule-info">
-                <div class="flight-num">${f.flight_number} — ${f.Airline?.name||''}</div>
-                <div class="route">${f.DepartureAirport?.iata_code||'?'} (${f.DepartureAirport?.city||''}) → ${f.ArrivalAirport?.iata_code||'?'} (${f.ArrivalAirport?.city||''})</div>
-                <div style="font-size:var(--font-xs);color:var(--text-muted);margin-top:4px">${formatTime(f.departure_time)} — ${formatTime(f.arrival_time)} · ${f.Aircraft?.model||''}</div>
+                <div class="flight-num">${f.flight_number} — ${f.Airline?.name || ''}</div>
+                <div class="route">${f.DepartureAirport?.iata_code || '?'} (${f.DepartureAirport?.city || ''}) → ${f.ArrivalAirport?.iata_code || '?'} (${f.ArrivalAirport?.city || ''})</div>
+                <div style="font-size:var(--font-xs);color:var(--text-muted);margin-top:4px">${formatTime(f.departure_time)} — ${formatTime(f.arrival_time)} · ${f.Aircraft?.model || ''}</div>
               </div>
-              <span class="status-badge ${getLatestStatus(f.statuses)}">${getLatestStatus(f.statuses).replace('_',' ')}</span>
+              <span class="status-badge ${getLatestStatus(f.statuses)}">${getLatestStatus(f.statuses).replace('_', ' ')}</span>
             </div>`;
-          }).join('')}
+      }).join('')}
         </div>`;
     } catch { main.innerHTML = '<div class="empty-state"><h3>Could not load schedule</h3></div>'; }
   } else if (currentView === 'profile') {
@@ -698,13 +702,13 @@ async function renderCrewDashboard() {
       main.innerHTML = `
         <div class="page-header animate-in"><h1>👤 Crew Profile</h1></div>
         <div class="animate-in" style="max-width:500px">
-          <div class="form-group"><label>Name</label><input class="form-control" value="${profile?.name||''}" disabled></div>
+          <div class="form-group"><label>Name</label><input class="form-control" value="${profile?.name || ''}" disabled></div>
           <div class="form-group"><label>Role</label>
             <select class="form-control" id="crew-role">
-              ${['Pilot','Co-Pilot','Flight Attendant','Flight Engineer'].map(r => `<option ${profile?.role===r?'selected':''}>${r}</option>`).join('')}
+              ${['Pilot', 'Co-Pilot', 'Flight Attendant', 'Flight Engineer'].map(r => `<option ${profile?.role === r ? 'selected' : ''}>${r}</option>`).join('')}
             </select>
           </div>
-          <div class="form-group"><label>Certification</label><input class="form-control" id="crew-cert" value="${profile?.certification||''}" placeholder="e.g. ATPL, CPL"></div>
+          <div class="form-group"><label>Certification</label><input class="form-control" id="crew-cert" value="${profile?.certification || ''}" placeholder="e.g. ATPL, CPL"></div>
           <button class="btn btn-primary" onclick="updateCrewProfile()"><span class="material-icons-round">save</span> Save Changes</button>
         </div>`;
     } catch { main.innerHTML = '<div class="empty-state"><h3>Could not load profile</h3></div>'; }
@@ -718,11 +722,13 @@ async function renderCrewDashboard() {
   }
 }
 
-window.updateCrewProfile = async function() {
-  await api('/api/crew/profile', { method: 'PUT', body: JSON.stringify({
-    role: document.getElementById('crew-role').value,
-    certification: document.getElementById('crew-cert').value,
-  })});
+window.updateCrewProfile = async function () {
+  await api('/api/crew/profile', {
+    method: 'PUT', body: JSON.stringify({
+      role: document.getElementById('crew-role').value,
+      certification: document.getElementById('crew-cert').value,
+    })
+  });
   showToast('Profile updated!', 'success');
 };
 
