@@ -9,6 +9,9 @@ const passport = require('./config/passport');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust Render's reverse proxy (needed for HTTPS redirect URIs)
+app.set('trust proxy', 1);
+
 // ─── Middleware ───
 app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:5173',
@@ -28,8 +31,8 @@ app.use(session({
   cookie: {
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
     httpOnly: true,
-    sameSite: 'lax',
-    secure: false, // Set to true in production with HTTPS
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    secure: process.env.NODE_ENV === 'production', // true in production (HTTPS)
   },
 }));
 
